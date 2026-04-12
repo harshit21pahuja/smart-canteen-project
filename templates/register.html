@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Canteen - Register{% endblock %}
+
+{% block content %}
+<div class="glass-card">
+    <div style="text-align: center; margin-bottom: 10px;">
+        <span style="font-size: 40px;">🎓</span>
+    </div>
+    <h2>Create Account</h2>
+    <p style="text-align: center; margin-bottom: 25px;">Join the Smart Canteen</p>
+
+    <form method="POST">
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="John Doe" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="roll">Roll Number</label>
+            <input type="text" id="roll" name="roll" placeholder="e.g. 10224" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" name="phone" placeholder="10-digit mobile" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="example@domain.com" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="program">Program</label>
+            <input type="text" id="program" name="program" placeholder="e.g. B.Tech" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="course">Course</label>
+            <input type="text" id="course" name="course" placeholder="e.g. CSE" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 25px;">
+            <label for="specialization">Specialization</label>
+            <input type="text" id="specialization" name="specialization" placeholder="e.g. Computer Science" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Register Account</button>
+    </form>
+
+    <a class="auth-link" href="/login">Already registered? Log in here</a>
+</div>
+{% endblock %}

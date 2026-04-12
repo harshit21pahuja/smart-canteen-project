@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Canteen - Set Daily Menu{% endblock %}
+
+{% block navbar %}
+<nav class="top-nav">
+    <a href="/admin_dashboard" class="brand">👨‍💼 Admin Panel</a>
+    <a href="/admin_dashboard" style="color: white; text-decoration: none; font-weight: 600;">Back to Dashboard</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card wide" style="margin-top: 40px;">
+    <h2>Update Today's Menu</h2>
+    <p style="text-align: center; margin-bottom: 30px;">Set the food items available for today.</p>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="breakfast">🍳 Breakfast Menu</label>
+            <input type="text" id="breakfast" name="breakfast" placeholder="e.g. Masala Dosa, Coffee" value="{{ menu.breakfast if menu else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="lunch">🍛 Lunch Menu</label>
+            <input type="text" id="lunch" name="lunch" placeholder="e.g. Rajma Chawal, Salad" value="{{ menu.lunch if menu else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="snacks">☕ Snacks Menu</label>
+            <input type="text" id="snacks" name="snacks" placeholder="e.g. Samosa, Chai" value="{{ menu.snacks if menu else '' }}" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 30px;">
+            <label for="dinner">🍽️ Dinner Menu</label>
+            <input type="text" id="dinner" name="dinner" placeholder="e.g. Paneer Butter Masala, Roti" value="{{ menu.dinner if menu else '' }}" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Save Menu Broadcast</button>
+    </form>
+</div>
+{% endblock %}

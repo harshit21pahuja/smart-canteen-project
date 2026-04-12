@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Canteen{% endblock %}</title>
+    <!-- Favicon / Meta description to boost SEO -->
+    <meta name="description" content="Smart Canteen web app for meal booking and admin controls.">
+    <!-- Link the central stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Background dynamic elements for premium feel -->
+    <div class="bg-shape shape1"></div>
+    <div class="bg-shape shape2"></div>
+
+    <!-- Optional navigation logic block -->
+    {% block navbar %}
+    {% endblock %}
+
+    <!-- Main content container -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- Optional scripts logic block -->
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

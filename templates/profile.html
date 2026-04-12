@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Canteen - Dashboard{% endblock %}
+
+{% block navbar %}
+<nav class="top-nav">
+    <a href="/profile" class="brand">🍽️ Smart Canteen</a>
+    <div class="profile-container">
+        <div class="avatar" onclick="toggleProfile()">
+            {{ name[0] }}{{ name.split(' ')[1][0] if ' ' in name else '' }}
+        </div>
+        <div class="profile-dropdown" id="profileCard">
+            <div class="profile-dropdown-content">
+                <p><span>Name:</span> {{ name }}</p>
+                <p><span>Roll:</span> {{ roll }}</p>
+                <p><span>Phone:</span> {{ phone }}</p>
+                <p><span>Email:</span> {{ email }}</p>
+                <p><span>Program:</span> {{ program }}</p>
+                <p><span>Course:</span> {{ course }}</p>
+                <p><span>Spec:</span> {{ specialization }}</p>
+            </div>
+            <div class="divider"></div>
+            <a href="/logout" class="btn-secondary" style="width: 100%; padding: 10px; font-size: 14px; margin-top: 0;">Logout</a>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card wide" style="margin-top: 40px; text-align: center;">
+    <div style="margin-bottom: 20px;">
+        <span style="font-size: 50px;">👋</span>
+    </div>
+    <h2>Welcome, {{ name.split(' ')[0] }}!</h2>
+    <p style="margin-bottom: 30px;">You are currently logged into the Smart Canteen Student Portal.</p>
+    
+    <div class="metrics-grid" style="grid-template-columns: 1fr; max-width: 300px; margin: 0 auto 30px;">
+        <div class="metric-card">
+            <div class="metric-icon">🍽️</div>
+            <div class="metric-value">Meal Booking</div>
+            <div class="metric-label">Reserve your daily meals</div>
+            <a href="/meal" class="btn-primary" style="margin-top: 15px; padding: 10px;">Go to Booking</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleProfile() {
+        var card = document.getElementById("profileCard");
+        if (card.style.display === "block" || card.style.opacity === "1") {
+            card.style.display = "none";
+            card.style.opacity = "0";
+        } else {
+            card.style.display = "block";
+            card.style.opacity = "1";
+        }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        var avatar = document.querySelector('.avatar');
+        var dropdown = document.getElementById('profileCard');
+        if (!avatar.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
