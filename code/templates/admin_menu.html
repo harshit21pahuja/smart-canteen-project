@@ -14,6 +14,19 @@
     <h2>Update Today's Menu</h2>
     <p style="text-align: center; margin-bottom: 30px;">Set the food items available for today.</p>
 
+    <!-- AI RECOMMENDATION BLOCK -->
+    {% if suggestions %}
+    <div style="background: rgba(43, 230, 153, 0.1); border-left: 4px solid #2be699; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="color: #2be699; margin-top:0; display:flex; align-items:center; gap:8px;">💡 AI Menu Suggestions</h3>
+        <ul style="color: #e2e8f0; line-height: 1.6; list-style-type: none; padding-left: 0;">
+            <li><strong>Breakfast:</strong> {{ suggestions.breakfast }} <br><span style="font-size:0.85em; opacity:0.8;">{{ reasonings.breakfast }}</span></li>
+            <li style="margin-top:10px;"><strong>Lunch:</strong> {{ suggestions.lunch }} <br><span style="font-size:0.85em; opacity:0.8;">{{ reasonings.lunch }}</span></li>
+            <li style="margin-top:10px;"><strong>Snacks:</strong> {{ suggestions.snacks }} <br><span style="font-size:0.85em; opacity:0.8;">{{ reasonings.snacks }}</span></li>
+            <li style="margin-top:10px;"><strong>Dinner:</strong> {{ suggestions.dinner }} <br><span style="font-size:0.85em; opacity:0.8;">{{ reasonings.dinner }}</span></li>
+        </ul>
+    </div>
+    {% endif %}
+
     <form method="POST">
         <div class="form-group">
             <label for="breakfast">🍳 Breakfast Menu</label>

@@ -8,11 +8,15 @@ app.secret_key = "smartcanteen_secret"
 import os
 from twilio.rest import Client
 
+from ai_models.meal_predictor import predict_tomorrow_meals
+from ai_models.waste_detector import analyze_plate_image
+from ai_models.menu_recommender import suggest_menu
+from ai_models.sentiment_analyzer import analyze_sentiments
 # ================= TWILIO CONFIGURATION =================
 # Replace these with your actual Twilio API credentials to send real SMS
-TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "your_account_sid_here")
-TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "your_auth_token_here")
-TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "your_phone_number_here")
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "YOUR_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "YOUR_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "YOUR_PHONE_NUMBER")
 
 def send_otp(phone, email, otp):
     print("\n" + "="*40)
@@ -163,6 +167,8 @@ def profile():
 
     if "name" not in session:
         return redirect(url_for("login"))
+        
+    msg = request.args.get("msg")
 
     return render_template(
         "profile.html",
@@ -172,8 +178,27 @@ def profile():
         email=session.get("email", ""),
         program=session.get("program", ""),
         course=session.get("course", ""),
-        specialization=session["specialization"]
+        specialization=session["specialization"],
+        msg=msg
     )
+
+# ================= SUBMIT SUGGESTION =================
+@app.route("/submit_suggestion", methods=["POST"])
+def submit_suggestion():
+    if "roll" not in session:
+        return redirect(url_for("login"))
+        
+    suggestion = request.form.get("suggestion")
+    if suggestion:
+        conn = get_db()
+        cur = conn.cursor()
+        import datetime
+        cur.execute("INSERT INTO student_suggestions (roll, suggestion, date) VALUES (?, ?, ?)",
+                   (session["roll"], suggestion, datetime.date.today().isoformat()))
+        conn.commit()
+        conn.close()
+        
+    return redirect(url_for("profile", msg="Your suggestion has been submitted successfully!"))
 
 
 # ================= MEAL BOOKING =================
@@ -264,15 +289,34 @@ def admin_dashboard():
     dinner = cur.execute(
         "SELECT COUNT(*) FROM meals WHERE dinner='Yes'"
     ).fetchone()[0]
+    
+    suggestions_count = 0
+    sentiment_data = None
+    try:
+        cur.execute("SELECT * FROM student_suggestions")
+        suggestions_raw = cur.fetchall()
+        suggestions_count = len(suggestions_raw)
+        sentiment_data = analyze_sentiments(suggestions_raw)
+    except Exception as e:
+        pass
 
     conn.close()
+    
+    # AI Predictions Integration
+    try:
+        predictions = predict_tomorrow_meals()
+    except Exception as e:
+        predictions = {"breakfast": 0, "lunch": 0, "snacks": 0, "dinner": 0}
 
     return render_template(
         "admin_dashboard.html",
         breakfast=breakfast,
         lunch=lunch,
         snacks=snacks,
-        dinner=dinner
+        dinner=dinner,
+        predictions=predictions,
+        suggestions_count=suggestions_count,
+        sentiment_data=sentiment_data
     )
 
 
@@ -320,8 +364,39 @@ def admin_menu():
     menu = cur.fetchone()
 
     conn.close()
+    
+    # AI Suggestions Integration
+    try:
+        suggestions, reasonings = suggest_menu()
+    except Exception as e:
+        suggestions, reasonings = {}, {}
 
-    return render_template("admin_menu.html", menu=menu)
+    return render_template("admin_menu.html", menu=menu, suggestions=suggestions, reasonings=reasonings)
+
+
+# ================= AI PLATE SCANNER =================
+
+@app.route("/admin_plate_scanner", methods=["GET","POST"])
+def admin_plate_scanner():
+    if "admin" not in session:
+        return redirect(url_for("admin"))
+
+    waste_result = None
+    if request.method == "POST":
+        if 'plate_image' in request.files:
+            file = request.files['plate_image']
+            if file.filename != '':
+                waste_result = analyze_plate_image(file)
+                # Log waste
+                conn = get_db()
+                cur = conn.cursor()
+                import datetime
+                cur.execute("INSERT INTO waste_logs (date, meal_type, waste_percentage) VALUES (?,?,?)", 
+                           (datetime.date.today().isoformat(), "general", waste_result))
+                conn.commit()
+                conn.close()
+
+    return render_template("admin_plate_scanner.html", waste_result=waste_result)
 
 
 # ================= LOGOUT =================

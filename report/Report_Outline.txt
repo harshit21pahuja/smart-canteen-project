@@ -1,0 +1,14 @@
+Please create your final report (PDF ONLY) according to this exact structure. Note that plagiarism must be kept strictly < 30%. Include detailed explanations for each section:
+
+1. Introduction to domain
+2. Introduction to sub-domain
+3. Literature survey + table
+4. Available datasets + dataset used
+5. Different models discussion
+6. Detailed model explanation
+7. Results + discussion
+8. Deployment discussion
+9. Real-time applications
+10. Conclusion
+
+Once complete, save the file as a PDF and place it in this folder.

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Canteen - AI Plate Scanner{% endblock %}
+
+{% block navbar %}
+<nav class="top-nav">
+    <a href="/admin_dashboard" class="brand">👨‍💼 Admin Panel</a>
+    <a href="/admin_dashboard" style="color: white; text-decoration: none; font-weight: 600;">Back to Dashboard</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card wide" style="margin-top: 40px; text-align: center;">
+    <h2>AI Plate Scanner & Waste Detection</h2>
+    <p style="margin-bottom: 30px;">Upload an image of a returned plate to calculate food waste using our Computer Vision AI.</p>
+
+    {% if waste_result is not none %}
+    <div style="background: rgba(43, 230, 153, 0.1); border: 2px solid #2be699; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="color: #2be699; margin-top:0;">Analysis Complete</h3>
+        <p style="font-size: 1.2rem; color: white;">Detected Food Waste: <strong>{{ waste_result }}%</strong></p>
+        <p style="font-size: 0.9rem; color: #ccc;">This data has been logged to the database to improve future AI Menu Suggestions.</p>
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" style="max-width: 400px; margin: 0 auto; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+        <div class="form-group">
+            <label for="plate_image" style="display: block; text-align: left; margin-bottom: 10px;">📸 Upload Plate Image</label>
+            <input type="file" id="plate_image" name="plate_image" accept="image/png, image/jpeg" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); color: white;" required>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">Analyze Plate</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+Please create your final presentation according to this exact slide structure:
+
+1. Front page
+2. Introduction to domain
+3. Introduction to sub-domain
+4. Literature survey + table
+5. Available datasets + dataset used
+6. Different models discussion
+7. Detailed model used
+8. Results + discussion
+9. Deployment SS (Screenshots of the UI)
+10. Real-time applications
+11. Conclusion
+
+Remember to place the final PowerPoint file (.pptx) in this folder.

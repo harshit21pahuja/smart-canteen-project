@@ -42,6 +42,22 @@
             <a href="/meal" class="btn-primary" style="margin-top: 15px; padding: 10px;">Go to Booking</a>
         </div>
     </div>
+    
+    <div style="max-width: 400px; margin: 0 auto; text-align: left; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+        <h3 style="margin-top: 0;">💡 Food Suggestions</h3>
+        <p style="font-size: 0.9em; color: #ccc;">Have a dish in mind or feedback on the current menu? Let us know!</p>
+        
+        {% if msg %}
+        <div style="background: #2be699; color: #000; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-weight: bold; text-align: center;">
+            {{ msg }}
+        </div>
+        {% endif %}
+
+        <form action="/submit_suggestion" method="POST">
+            <textarea name="suggestion" rows="3" placeholder="I suggest we add..." style="width: 100%; border-radius: 4px; padding: 10px; border: none; font-family: inherit; margin-bottom: 10px; resize: vertical;" required></textarea>
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 10px;">Submit Feedback</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
 
