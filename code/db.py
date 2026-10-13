@@ -165,6 +165,12 @@ def init_db():
         waste_percentage {real_type}
     );
     """)
+
+    # Enable Row Level Security (RLS) on PostgreSQL tables to secure public API access
+    if pg:
+        for tbl in ["users", "meals", "menu", "student_suggestions", "historical_meals", "waste_logs"]:
+            cur.execute(f"ALTER TABLE {tbl} ENABLE ROW LEVEL SECURITY;")
+
     conn.commit()
 
     # Seed default menu
