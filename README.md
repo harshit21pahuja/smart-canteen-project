@@ -5,9 +5,17 @@
 [![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn-orange.svg)](https://scikit-learn.org/)
 [![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20Supabase-3ECF8E.svg)](https://supabase.com/)
 [![TextBlob](https://img.shields.io/badge/NLP-TextBlob-yellowgreen.svg)](https://textblob.readthedocs.io/)
-[![Deployment](https://img.shields.io/badge/Deploy-Render%20%7C%20Railway-success.svg)](#-cloud-deployment-guide)
+[![Deployment](https://img.shields.io/badge/Deploy-Render%20Live-brightgreen.svg)](https://smart-canteen-project-khfa.onrender.com)
 
 An intelligent, full-stack campus dining and food optimization system designed to tackle university/hostel food waste. By combining **predictive demand forecasting**, **conflict-free digital meal bookings**, **NLP student feedback analysis**, and **computer vision plate waste monitoring**, Smart Canteen empowers kitchen management to cook the exact required portions while giving students a frictionless dining portal.
+
+---
+
+## 🌐 Live Production Deployment
+
+🔗 **Live URL:** [https://smart-canteen-project-khfa.onrender.com](https://smart-canteen-project-khfa.onrender.com)
+
+Hosted on **Render.com** (Python/Gunicorn) connected to **Supabase Cloud PostgreSQL**.
 
 ---
 
@@ -17,9 +25,9 @@ For recruiters, evaluators, and reviewers testing the application:
 
 | Role | Portal URL | Username / Roll | Password / Phone | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Admin** | `/admin` | `admin` | `admin123` | Full dashboard, AI metrics, and simulation controls |
-| **Demo Student** | `/login` | `101` | `9876543210` | Pre-registered test account *(OTP displays on screen)* |
-| **New Student** | `/register` | *Any custom Roll* | *Any 10-digit Phone* | Self-registration flow with profile management |
+| **Admin** | [`/admin`](https://smart-canteen-project-khfa.onrender.com/admin) | `admin` | `admin123` | Full dashboard, AI metrics, and simulation controls |
+| **Demo Student** | [`/login`](https://smart-canteen-project-khfa.onrender.com/login) | `101` | `9876543210` | Pre-registered test account *(OTP displays on screen)* |
+| **New Student** | [`/register`](https://smart-canteen-project-khfa.onrender.com/register) | *Any custom Roll* | *Any 10-digit Phone* | Self-registration flow with profile management |
 
 > 💡 **Demo OTP Note:** Live SMS via Twilio is optional. In testing mode, the 6-digit OTP is automatically shown on-screen and logged to the server terminal.
 
