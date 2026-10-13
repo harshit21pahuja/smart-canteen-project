@@ -32,29 +32,73 @@
         <span style="font-size: 50px;">👋</span>
     </div>
     <h2>Welcome, {{ name.split(' ')[0] }}!</h2>
-    <p style="margin-bottom: 30px;">You are currently logged into the Smart Canteen Student Portal.</p>
+    <p style="margin-bottom: 25px;">You are currently logged into the Smart Canteen Student Portal.</p>
+
+    {% if msg %}
+    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #065f46; padding: 12px 18px; border-radius: 10px; margin: 0 auto 25px; max-width: 480px; font-weight: 600; text-align: center;">
+        ✅ {{ msg }}
+    </div>
+    {% endif %}
     
-    <div class="metrics-grid" style="grid-template-columns: 1fr; max-width: 300px; margin: 0 auto 30px;">
-        <div class="metric-card">
-            <div class="metric-icon">🍽️</div>
-            <div class="metric-value">Meal Booking</div>
-            <div class="metric-label">Reserve your daily meals</div>
-            <a href="/meal" class="btn-primary" style="margin-top: 15px; padding: 10px;">Go to Booking</a>
+    <!-- Meal Booking Status Card -->
+    <div style="max-width: 480px; margin: 0 auto 35px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; text-align: left;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 28px;">🍽️</span>
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; color: var(--text-main); text-align: left;">Today's Meal Status</h3>
+                    <small style="color: #6b7280;">Daily booking & dining preferences</small>
+                </div>
+            </div>
+            {% if existing_booking %}
+            <span style="background: rgba(16, 185, 129, 0.2); color: #047857; font-weight: 700; font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.4);">
+                ● Booked
+            </span>
+            {% else %}
+            <span style="background: rgba(245, 158, 11, 0.2); color: #b45309; font-weight: 700; font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(245, 158, 11, 0.4);">
+                ● Pending
+            </span>
+            {% endif %}
         </div>
+
+        {% if existing_booking %}
+        <p style="font-size: 14px; color: #4b5563; margin-bottom: 15px;">
+            You have already confirmed your meals for today. Duplicate bookings are blocked, but you can update your preferences anytime:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+            <div style="background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px; font-size: 13px;">
+                🍳 Breakfast: <strong style="color: {% if existing_booking.breakfast == 'Yes' %}#059669{% elif existing_booking.breakfast == 'No' %}#dc2626{% else %}#d97706{% endif %};">{{ existing_booking.breakfast }}</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px; font-size: 13px;">
+                🍛 Lunch: <strong style="color: {% if existing_booking.lunch == 'Yes' %}#059669{% elif existing_booking.lunch == 'No' %}#dc2626{% else %}#d97706{% endif %};">{{ existing_booking.lunch }}</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px; font-size: 13px;">
+                ☕ Snacks: <strong style="color: {% if existing_booking.snacks == 'Yes' %}#059669{% elif existing_booking.snacks == 'No' %}#dc2626{% else %}#d97706{% endif %};">{{ existing_booking.snacks }}</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px; font-size: 13px;">
+                🍽️ Dinner: <strong style="color: {% if existing_booking.dinner == 'Yes' %}#059669{% elif existing_booking.dinner == 'No' %}#dc2626{% else %}#d97706{% endif %};">{{ existing_booking.dinner }}</strong>
+            </div>
+        </div>
+        <a href="/meal" class="btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 12px; background: linear-gradient(135deg, #10B981, #059669);">
+            ✏️ Edit My Booking
+        </a>
+        {% else %}
+        <p style="font-size: 14px; color: #4b5563; margin-bottom: 20px;">
+            You have not booked today's meals yet. Please confirm your preferences to ensure food availability and reduce waste.
+        </p>
+        <a href="/meal" class="btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 12px;">
+            🍽️ Book Today's Meals
+        </a>
+        {% endif %}
     </div>
     
-    <div style="max-width: 400px; margin: 0 auto; text-align: left; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
-        <h3 style="margin-top: 0;">💡 Food Suggestions</h3>
-        <p style="font-size: 0.9em; color: #ccc;">Have a dish in mind or feedback on the current menu? Let us know!</p>
-        
-        {% if msg %}
-        <div style="background: #2be699; color: #000; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-weight: bold; text-align: center;">
-            {{ msg }}
-        </div>
-        {% endif %}
+    <!-- Suggestions Section -->
+    <div style="max-width: 480px; margin: 0 auto; text-align: left; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); padding: 25px; border-radius: 16px;">
+        <h3 style="margin-top: 0; font-size: 18px; text-align: left;">💡 Food Suggestions & Feedback</h3>
+        <p style="font-size: 0.9em; color: #4b5563; margin-bottom: 15px;">Have a dish recommendation or feedback for the kitchen? Let us know!</p>
 
         <form action="/submit_suggestion" method="POST">
-            <textarea name="suggestion" rows="3" placeholder="I suggest we add..." style="width: 100%; border-radius: 4px; padding: 10px; border: none; font-family: inherit; margin-bottom: 10px; resize: vertical;" required></textarea>
+            <textarea name="suggestion" rows="3" placeholder="I suggest we add..." style="width: 100%; border-radius: 8px; padding: 12px; border: 1px solid var(--border-color); font-family: inherit; margin-bottom: 12px; resize: vertical; box-sizing: border-box;" required></textarea>
             <button type="submit" class="btn-primary" style="width: 100%; padding: 10px;">Submit Feedback</button>
         </form>
     </div>

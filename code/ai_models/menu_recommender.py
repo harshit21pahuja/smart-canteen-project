@@ -1,5 +1,9 @@
+import os
 import sqlite3
 import random
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_DB = os.path.join(BASE_DIR, "database.db")
 
 FOOD_OPTIONS = {
     "breakfast": ["Aloo Paratha", "Poha", "Idli Sambhar", "Bread Omelet", "Puri Sabzi", "Masala Dosa"],
@@ -8,7 +12,7 @@ FOOD_OPTIONS = {
     "dinner": ["Mix Veg", "Chicken Curry", "Dal Tadka", "Mutter Paneer", "Egg Curry", "Shahi Paneer"]
 }
 
-def suggest_menu(db_path="database.db"):
+def suggest_menu(db_path=DEFAULT_DB):
     """
     AI Analytic Engine to suggest the best optimal menu
     based on historical "waste" logic and popularity.

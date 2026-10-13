@@ -8,21 +8,31 @@
         <span style="font-size: 40px;">👨‍💼</span>
     </div>
     <h2>Admin Access</h2>
-    <p style="text-align: center; margin-bottom: 30px;">Login to the Admin Dashboard</p>
+    <p style="text-align: center; margin-bottom: 25px;">Login to the Admin Dashboard</p>
+
+    {% if error %}
+    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; text-align: center;">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
 
     <form method="POST">
         <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Admin username" required>
+            <input type="text" id="username" name="username" placeholder="Admin username (e.g. admin)" required>
         </div>
 
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Admin password" required>
+            <input type="password" id="password" name="password" placeholder="Admin password (e.g. admin123)" required>
         </div>
 
         <button type="submit" class="btn-primary" style="margin-top: 10px; background: linear-gradient(135deg, #111827, #374151);">Login as Admin</button>
     </form>
+
+    <div style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; font-size: 13px; color: #94a3b8; text-align: center;">
+        💡 <strong>Default Admin:</strong> User: <code>admin</code> &nbsp;|&nbsp; Pass: <code>admin123</code>
+    </div>
 
     <a class="auth-link" href="/login">Back to Student Login</a>
 </div>

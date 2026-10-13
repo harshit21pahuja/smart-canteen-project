@@ -1,0 +1,7 @@
+flask
+gunicorn
+twilio
+scikit-learn
+numpy
+pillow
+textblob

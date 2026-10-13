@@ -7,7 +7,7 @@ def analyze_sentiments(suggestions):
     """
     total = len(suggestions)
     if total == 0:
-        return {"positive": 0, "negative": 0, "neutral": 0, "analyzed_data": []}
+        return {"positive": 0, "negative": 0, "neutral": 0, "positive_pct": 0, "negative_pct": 0, "neutral_pct": 0, "total": 0, "analyzed_data": []}
 
     results = []
     pos_count = 0

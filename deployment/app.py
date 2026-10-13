@@ -20,10 +20,10 @@ TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "YOUR_PHONE_NUMBER")
 
 def send_otp(phone, email, otp):
     print("\n" + "="*40)
-    print("🚀 [SMART CANTEEN] SENDING OTP...")
-    print(f"📱 To Phone: {phone}")
-    print(f"✉️ To Email: {email}")
-    print(f"🔑 Your OTP : {otp}")
+    print(">> [SMART CANTEEN] SENDING OTP...")
+    print(f">> Phone: {phone}")
+    print(f">> Email: {email}")
+    print(f">> Your OTP : {otp}")
     print("="*40 + "\n")
 
     # Send SMS via Twilio
@@ -31,21 +31,28 @@ def send_otp(phone, email, otp):
         if len(phone) == 10 and phone.isdigit():
             phone = "+91" + phone  # Prepend Indian country code if needed
             
-        if TWILIO_ACCOUNT_SID != "your_account_sid_here":
+        if TWILIO_ACCOUNT_SID not in ["YOUR_ACCOUNT_SID", "your_account_sid_here"]:
             client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
             message = client.messages.create(
                 body=f"Your Smart Canteen Login OTP is: {otp}",
                 from_=TWILIO_PHONE_NUMBER,
                 to=phone
             )
-            print(f"✅ SMS successfully sent via Twilio! Message SID: {message.sid}")
+            print(f"[OK] SMS successfully sent via Twilio! Message SID: {message.sid}")
         else:
-            print("⚠️ Twilio API not configured: missing TWILIO_ACCOUNT_SID. Using console-printed OTP for testing.")
+            print("[INFO] Twilio API not configured. Using console-printed OTP for testing.")
     except Exception as e:
-        print(f"❌ Failed to send SMS via Twilio: {str(e)}")
+        print(f"[ERROR] Failed to send SMS via Twilio: {str(e)}")
 
-DATABASE = "database.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(BASE_DIR, "database.db")
 
+# Automatically sync database schema & seed data on startup (works with Gunicorn and local runner)
+try:
+    from update_db import update_db
+    update_db(DATABASE)
+except Exception as e:
+    print(f"[INIT] Database sync notice: {e}")
 
 def get_db():
     conn = sqlite3.connect(DATABASE)
@@ -128,7 +135,7 @@ def login():
 
             return redirect(url_for("verify_otp"))
 
-        return "Invalid Login Credentials"
+        return render_template("login.html", error="Invalid Enrollment or Phone number. If you haven't registered, please create an account below.")
 
     return render_template("login.html")
 
@@ -139,9 +146,11 @@ def verify_otp():
     if "pending_login" not in session:
         return redirect(url_for("login"))
 
+    pending = session["pending_login"]
+    demo_otp = pending.get("otp") if TWILIO_ACCOUNT_SID in ["YOUR_ACCOUNT_SID", "your_account_sid_here"] else None
+
     if request.method == "POST":
         user_otp = request.form["otp"]
-        pending = session["pending_login"]
 
         if user_otp == pending["otp"]:
             session["name"] = pending["name"]
@@ -155,9 +164,9 @@ def verify_otp():
             session.pop("pending_login", None)
             return redirect(url_for("profile"))
 
-        return "Invalid OTP. Please try again."
+        return render_template("verify_otp.html", error="Invalid OTP code. Please try again.", demo_otp=demo_otp)
 
-    return render_template("verify_otp.html")
+    return render_template("verify_otp.html", demo_otp=demo_otp)
 
 
 # ================= PROFILE =================
@@ -170,6 +179,12 @@ def profile():
         
     msg = request.args.get("msg")
 
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM meals WHERE roll=?", (session["roll"],))
+    existing_booking = cur.fetchone()
+    conn.close()
+
     return render_template(
         "profile.html",
         name=session["name"],
@@ -179,6 +194,7 @@ def profile():
         program=session.get("program", ""),
         course=session.get("course", ""),
         specialization=session["specialization"],
+        existing_booking=existing_booking,
         msg=msg
     )
 
@@ -212,18 +228,24 @@ def meal():
     conn = get_db()
     cur = conn.cursor()
 
+    roll = session["roll"]
+
     # Get today's menu
     cur.execute("SELECT * FROM menu WHERE date=?", ("today",))
     menu = cur.fetchone()
 
-    roll = session["roll"]
+    # Check if student has already booked
+    cur.execute("SELECT * FROM meals WHERE roll=?", (roll,))
+    existing_booking = cur.fetchone()
 
     if request.method == "POST":
 
-        breakfast = request.form.get("breakfast")
-        lunch = request.form.get("lunch")
-        snacks = request.form.get("snacks")
-        dinner = request.form.get("dinner")
+        breakfast = request.form.get("breakfast", "No")
+        lunch = request.form.get("lunch", "No")
+        snacks = request.form.get("snacks", "No")
+        dinner = request.form.get("dinner", "No")
+
+        is_update = existing_booking is not None
 
         cur.execute("""
         INSERT INTO meals (roll, breakfast, lunch, snacks, dinner)
@@ -236,12 +258,14 @@ def meal():
         """, (roll, breakfast, lunch, snacks, dinner))
 
         conn.commit()
+        conn.close()
 
-        return redirect(url_for("profile"))
+        msg = "Your meal booking has been updated successfully!" if is_update else "Your meal has been booked successfully!"
+        return redirect(url_for("profile", msg=msg))
 
     conn.close()
 
-    return render_template("meal.html", menu=menu)
+    return render_template("meal.html", menu=menu, existing_booking=existing_booking)
 
 
 # ================= ADMIN LOGIN =================
@@ -258,7 +282,7 @@ def admin():
             session["admin"] = True
             return redirect(url_for("admin_dashboard"))
 
-        return "Invalid Admin Login"
+        return render_template("admin_login.html", error="Invalid admin username or password.")
 
     return render_template("admin_login.html")
 
@@ -300,6 +324,7 @@ def admin_dashboard():
     except Exception as e:
         pass
 
+    msg = request.args.get("msg")
     conn.close()
     
     # AI Predictions Integration
@@ -316,8 +341,96 @@ def admin_dashboard():
         dinner=dinner,
         predictions=predictions,
         suggestions_count=suggestions_count,
-        sentiment_data=sentiment_data
+        sentiment_data=sentiment_data,
+        msg=msg
     )
+
+
+# ================= CANTEEN DEMO SIMULATOR =================
+
+@app.route("/admin_populate_demo")
+def admin_populate_demo():
+    if "admin" not in session:
+        return redirect(url_for("admin"))
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    import random
+    import datetime
+
+    # Seed 50 students
+    for i in range(1, 51):
+        r = f"2024CS{100 + i}"
+        name = f"Student {i}"
+        phone = f"987654{1000 + i}"
+        email = f"student{i}@bennett.edu.in"
+        cur.execute("""
+        INSERT OR IGNORE INTO users (name, roll, phone, email, program, course, specialization)
+        VALUES (?, ?, ?, ?, 'B.Tech', 'CSE', 'AI & ML')
+        """, (name, r, phone, email))
+
+        # Realistic canteen attendance rates
+        b_val = "Yes" if random.random() < 0.78 else ("Maybe" if random.random() < 0.4 else "No")
+        l_val = "Yes" if random.random() < 0.90 else ("Maybe" if random.random() < 0.4 else "No")
+        s_val = "Yes" if random.random() < 0.65 else ("Maybe" if random.random() < 0.4 else "No")
+        d_val = "Yes" if random.random() < 0.82 else ("Maybe" if random.random() < 0.4 else "No")
+
+        cur.execute("""
+        INSERT INTO meals (roll, breakfast, lunch, snacks, dinner)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(roll) DO UPDATE SET
+        breakfast=excluded.breakfast,
+        lunch=excluded.lunch,
+        snacks=excluded.snacks,
+        dinner=excluded.dinner
+        """, (r, b_val, l_val, s_val, d_val))
+
+    # Add realistic student feedback suggestions
+    sample_suggestions = [
+        ("2024CS101", "The paneer butter masala today was delicious and very fresh!"),
+        ("2024CS103", "Please add more fruit options in breakfast."),
+        ("2024CS107", "Dal Makhani quality has improved a lot, loved it!"),
+        ("2024CS112", "Snacks were slightly oily today, please make it lighter."),
+        ("2024CS118", "Great service and fast plate verification at the counter!"),
+        ("2024CS124", "The evening masala chai was amazing today."),
+        ("2024CS130", "App is very smooth and meal booking saves queue waiting time.")
+    ]
+    cur.execute("DELETE FROM student_suggestions")
+    today_iso = datetime.date.today().isoformat()
+    for roll, text in sample_suggestions:
+        cur.execute("INSERT INTO student_suggestions (roll, suggestion, date) VALUES (?, ?, ?)",
+                    (roll, text, today_iso))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("admin_dashboard", msg="Canteen traffic loaded: 50 active students with confirmed meal bookings!"))
+
+
+@app.route("/admin_reset_demo")
+def admin_reset_demo():
+    if "admin" not in session:
+        return redirect(url_for("admin"))
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    # Retain only initial test student 101
+    cur.execute("DELETE FROM users WHERE roll != '101'")
+    cur.execute("DELETE FROM meals WHERE roll != '101'")
+    cur.execute("DELETE FROM student_suggestions")
+
+    # Ensure original test student exists
+    cur.execute("""
+    INSERT OR IGNORE INTO users (name, roll, phone, email, program, course, specialization)
+    VALUES ('Test Student', '101', '9876543210', 'student@example.com', 'B.Tech', 'CSE', 'AI & ML')
+    """)
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("admin_dashboard", msg="Database has been reset to original state!"))
 
 
 # ================= ADMIN MENU =================
@@ -409,4 +522,6 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    debug_mode = os.environ.get("FLASK_DEBUG", "True").lower() in ["true", "1"]
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)

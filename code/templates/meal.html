@@ -11,7 +11,33 @@
 
 {% block content %}
 <div class="glass-card wide" style="margin-top: 40px;">
+    {% if existing_booking %}
+    <h2>Edit Today's Meal Preferences</h2>
+    <p style="text-align: center; margin-bottom: 25px; color: #4b5563;">Update your selections for today's meals below</p>
+
+    <!-- Already Booked Status Card -->
+    <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 18px 20px; margin-bottom: 25px; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+            <span style="font-size: 24px;">✅</span>
+            <strong style="color: #065f46; font-size: 16px;">You Have Already Booked Today's Meals</strong>
+        </div>
+        <p style="margin: 0 0 12px 0; color: #374151; font-size: 14px;">
+            Duplicate bookings are prevented. You can modify your choices below at any time before the meal cut-off.
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 8px; font-size: 13px;">
+            <span>🍳 Breakfast: <strong style="color: {% if existing_booking.breakfast == 'Yes' %}#059669{% elif existing_booking.breakfast == 'No' %}#dc2626{% else %}#d97706{% endif %};">{{ existing_booking.breakfast }}</strong></span>
+            <span>•</span>
+            <span>🍛 Lunch: <strong style="color: {% if existing_booking.lunch == 'Yes' %}#059669{% elif existing_booking.lunch == 'No' %}#dc2626{% else %}#d97706{% endif %};">{{ existing_booking.lunch }}</strong></span>
+            <span>•</span>
+            <span>☕ Snacks: <strong style="color: {% if existing_booking.snacks == 'Yes' %}#059669{% elif existing_booking.snacks == 'No' %}#dc2626{% else %}#d97706{% endif %};">{{ existing_booking.snacks }}</strong></span>
+            <span>•</span>
+            <span>🍽️ Dinner: <strong style="color: {% if existing_booking.dinner == 'Yes' %}#059669{% elif existing_booking.dinner == 'No' %}#dc2626{% else %}#d97706{% endif %};">{{ existing_booking.dinner }}</strong></span>
+        </div>
+    </div>
+    {% else %}
     <h2>Confirm Today's Meals</h2>
+    <p style="text-align: center; margin-bottom: 25px; color: #4b5563;">Reserve your daily meals and help reduce food wastage</p>
+    {% endif %}
 
     {% if menu %}
     <div class="info-box" style="margin-bottom: 30px;">
@@ -44,38 +70,46 @@
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="breakfast">🍳 Breakfast (7:30 am - 9:30 am)</label>
                 <select name="breakfast" id="breakfast">
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                    <option value="Maybe">Maybe</option>
+                    <option value="Yes" {% if existing_booking and existing_booking.breakfast == 'Yes' %}selected{% endif %}>Yes</option>
+                    <option value="No" {% if existing_booking and existing_booking.breakfast == 'No' %}selected{% endif %}>No</option>
+                    <option value="Maybe" {% if existing_booking and existing_booking.breakfast == 'Maybe' %}selected{% endif %}>Maybe</option>
                 </select>
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="lunch">🍛 Lunch (12:00 pm - 3:00 pm)</label>
                 <select name="lunch" id="lunch">
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                    <option value="Maybe">Maybe</option>
+                    <option value="Yes" {% if existing_booking and existing_booking.lunch == 'Yes' %}selected{% endif %}>Yes</option>
+                    <option value="No" {% if existing_booking and existing_booking.lunch == 'No' %}selected{% endif %}>No</option>
+                    <option value="Maybe" {% if existing_booking and existing_booking.lunch == 'Maybe' %}selected{% endif %}>Maybe</option>
                 </select>
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="snacks">☕ Snacks (5:00 pm - 6:00 pm)</label>
                 <select name="snacks" id="snacks">
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                    <option value="Maybe">Maybe</option>
+                    <option value="Yes" {% if existing_booking and existing_booking.snacks == 'Yes' %}selected{% endif %}>Yes</option>
+                    <option value="No" {% if existing_booking and existing_booking.snacks == 'No' %}selected{% endif %}>No</option>
+                    <option value="Maybe" {% if existing_booking and existing_booking.snacks == 'Maybe' %}selected{% endif %}>Maybe</option>
                 </select>
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="dinner">🍽️ Dinner (8:00 pm - 10:00 pm)</label>
                 <select name="dinner" id="dinner">
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                    <option value="Maybe">Maybe</option>
+                    <option value="Yes" {% if existing_booking and existing_booking.dinner == 'Yes' %}selected{% endif %}>Yes</option>
+                    <option value="No" {% if existing_booking and existing_booking.dinner == 'No' %}selected{% endif %}>No</option>
+                    <option value="Maybe" {% if existing_booking and existing_booking.dinner == 'Maybe' %}selected{% endif %}>Maybe</option>
                 </select>
             </div>
         </div>
 
-        <button type="submit" class="btn-primary" style="margin-top: 15px;">Save Meal Preferences</button>
+        {% if existing_booking %}
+        <button type="submit" class="btn-primary" style="margin-top: 20px; background: linear-gradient(135deg, #10B981, #059669);">
+            ✏️ Update Meal Preferences
+        </button>
+        {% else %}
+        <button type="submit" class="btn-primary" style="margin-top: 20px;">
+            🍽️ Confirm & Book Meals
+        </button>
+        {% endif %}
     </form>
 </div>
 {% endblock %}

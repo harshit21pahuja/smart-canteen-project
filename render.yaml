@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: smart-canteen
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --chdir code app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.0
+      - key: FLASK_DEBUG
+        value: "False"

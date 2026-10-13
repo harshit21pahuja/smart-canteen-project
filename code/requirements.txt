@@ -1,5 +1,7 @@
 flask
-twilioscikit-learn
+gunicorn
+twilio
+scikit-learn
 numpy
 pillow
 textblob

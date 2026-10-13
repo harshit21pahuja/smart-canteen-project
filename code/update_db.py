@@ -1,8 +1,55 @@
+import os
 import sqlite3
 
-def update_db():
-    conn = sqlite3.connect('database.db')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database.db")
+
+def update_db(db_path=DB_PATH):
+    conn = sqlite3.connect(db_path)
     cur = conn.cursor()
+    
+    # Core application tables
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        roll TEXT UNIQUE,
+        phone TEXT,
+        email TEXT,
+        program TEXT,
+        course TEXT,
+        specialization TEXT
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS meals (
+        roll TEXT PRIMARY KEY,
+        breakfast TEXT,
+        lunch TEXT,
+        snacks TEXT,
+        dinner TEXT
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS menu (
+        date TEXT PRIMARY KEY,
+        breakfast TEXT,
+        lunch TEXT,
+        snacks TEXT,
+        dinner TEXT
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS student_suggestions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        roll TEXT,
+        suggestion TEXT,
+        date TEXT
+    )
+    """)
     
     # Track historical meals for AI training
     cur.execute("""
@@ -51,6 +98,22 @@ def update_db():
             VALUES (?, ?, ?)
             """, (d, random.choice(["breakfast", "lunch", "snacks", "dinner"]), random.uniform(5.0, 45.0)))
             
+    # Insert default menu if empty
+    cur.execute("SELECT COUNT(*) FROM menu")
+    if cur.fetchone()[0] == 0:
+        cur.execute("""
+        INSERT INTO menu (date, breakfast, lunch, snacks, dinner)
+        VALUES ('today', 'Aloo Paratha & Curd', 'Rajma Chawal & Salad', 'Samosa & Chai', 'Paneer Butter Masala & Roti')
+        """)
+
+    # Insert a sample student for quick testing if empty
+    cur.execute("SELECT COUNT(*) FROM users")
+    if cur.fetchone()[0] == 0:
+        cur.execute("""
+        INSERT INTO users (name, roll, phone, email, program, course, specialization)
+        VALUES ('Test Student', '101', '9876543210', 'student@example.com', 'B.Tech', 'CSE', 'AI & ML')
+        """)
+
     conn.commit()
     conn.close()
     print("Database synced for AI!")
