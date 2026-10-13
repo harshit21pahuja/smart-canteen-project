@@ -10,3 +10,5 @@ services:
         value: 3.13.0
       - key: FLASK_DEBUG
         value: "False"
+      - key: DATABASE_URL
+        sync: false

@@ -1,12 +1,25 @@
 import os
-import sqlite3
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_DB = os.path.join(BASE_DIR, "database.db")
+def _get_connection(db_path=None):
+    if db_path is not None and str(db_path).endswith(".db"):
+        import sqlite3
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
+    try:
+        from db import get_db
+        return get_db()
+    except Exception:
+        import sqlite3
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        DEFAULT_DB = os.path.join(BASE_DIR, "database.db")
+        conn = sqlite3.connect(DEFAULT_DB)
+        conn.row_factory = sqlite3.Row
+        return conn
 
-def predict_tomorrow_meals(db_path=DEFAULT_DB):
+def predict_tomorrow_meals(db_path=None):
     """
     AI Analytic Engine to predict tomorrow's meal demand.
     Dynamically adapts between small test environments (e.g. 1-5 students)
@@ -14,7 +27,7 @@ def predict_tomorrow_meals(db_path=DEFAULT_DB):
     demand always looks natural, realistic, and mathematically consistent with
     today's confirmed numbers.
     """
-    conn = sqlite3.connect(db_path)
+    conn = _get_connection(db_path)
     cur = conn.cursor()
     
     # 1. Fetch today's actual live bookings

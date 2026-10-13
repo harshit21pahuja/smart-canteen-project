@@ -3,6 +3,7 @@
 [![Python](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Framework-Flask%203.x-lightgrey.svg)](https://flask.palletsprojects.com/)
 [![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn-orange.svg)](https://scikit-learn.org/)
+[![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20Supabase-3ECF8E.svg)](https://supabase.com/)
 [![TextBlob](https://img.shields.io/badge/NLP-TextBlob-yellowgreen.svg)](https://textblob.readthedocs.io/)
 [![Deployment](https://img.shields.io/badge/Deploy-Render%20%7C%20Railway-success.svg)](#-cloud-deployment-guide)
 
@@ -77,7 +78,7 @@ smart-canteen-project/
 ### Tech Stack
 - **Backend:** Python 3.13, Flask 3.1, Gunicorn (Production WSGI)
 - **Machine Learning & NLP:** Scikit-Learn, NumPy, TextBlob
-- **Database:** SQLite3 (self-healing, zero-configuration auto-migrations)
+- **Database:** Dual-engine architecture: Managed Cloud PostgreSQL ([Supabase](https://supabase.com)) with automatic schema migrations + Local SQLite fallback
 - **Security & Communications:** Session cookies, Twilio SMS API integration (simulated & live ready)
 - **Styling:** Vanilla CSS Glassmorphism design tokens (no bulky dependencies)
 

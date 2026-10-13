@@ -44,20 +44,13 @@ def send_otp(phone, email, otp):
     except Exception as e:
         print(f"[ERROR] Failed to send SMS via Twilio: {str(e)}")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, "database.db")
+from db import get_db, init_db, is_postgres
 
-# Automatically sync database schema & seed data on startup (works with Gunicorn and local runner)
+# Automatically sync database schema & seed data on startup (supports Supabase PostgreSQL & SQLite fallback)
 try:
-    from update_db import update_db
-    update_db(DATABASE)
+    init_db()
 except Exception as e:
     print(f"[INIT] Database sync notice: {e}")
-
-def get_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
 @app.route("/")
